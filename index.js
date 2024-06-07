@@ -4,6 +4,7 @@ const WebSocket = require("ws");
 const uao = require("uao-js");
 const { Telnet } = require("telnet-client");
 const { ansiToPre } = require("ansi-to-pre");
+const ansi = require("ansi-escape-sequences");
 
 const app = express();
 const server = http.createServer(app);
@@ -47,16 +48,14 @@ wss.on("connection", async (ws) => {
       });
   });
 
+  ws.on("close", () => {
+    console.log("Client disconnected");
+    telnetClient.end();
+  });
+
   ws.on("message", (message) => {
-    // If connected to ptt.cc, send message
-    if (message === "/q") {
-      ws.on("close", () => {
-        console.log("Client disconnected");
-        telnetClient.end();
-      });
-    } else {
-      telnetClient.send(message);
-    }
+    console.log("Received from client:", message.toString()); // Logging the received message
+    handleClientMessage(message, telnetClient);
   });
 });
 
@@ -75,6 +74,34 @@ function decodeBuffer(buffer) {
   });
 }
 
+function handleClientMessage(message, telnetClient) {
+  const keyboardSequences = {
+    ArrowUp: "\x1b[A",
+    ArrowDown: "\x1b[B",
+    ArrowRight: "\x1b[C",
+    ArrowLeft: "\x1b[D",
+    PageUp: "\x1b[5~",
+    PageDown: "\x1b[6~",
+    CtrlLeft: "\x1b[1;5D",
+    CtrlRight: "\x1b[1;5C",
+  };
+
+  const sequence = keyboardSequences[message.toString()];
+  if (sequence) {
+    console.log("Sending sequence to Telnet:", sequence); // Logging the sequence being sent
+    telnetClient.write(sequence, (error) => {
+      if (error) {
+        console.error("Telnet send error:", error);
+      }
+    });
+  } else {
+    telnetClient.send(message, (error) => {
+      if (error) {
+        console.error("Telnet send error:", error);
+      }
+    });
+  }
+}
 server.listen(3000, () => {
   console.log("Server is running on port 3000");
 });

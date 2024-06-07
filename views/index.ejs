@@ -5,26 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PTT Client</title>
   <style>
+    html, body {
+      padding: 0;
+      margin: 0;
+      background-color: #000;
+    }
     @font-face {
         font-family: 'uming';
         src: url('/fonts/uming.ttc') format('truetype');
         font-weight: normal;
     }
     #output {
+      width: 100%;
+      height: 100%;
       font-family: 'uming';
       color: #FFF;
-      background-color: #000; 
+      background-color: #000;
       white-space: pre;
       line-height: 15px;
+      zoom: 2.2;
+    }
+    #Command {
+      position: absolute;
+      display: flex;
+      width: 100%;
+      height: 30px;
+    }
+    #Command > input {
+      background: white;
+      height: 30px;
+      line-height: 30px;
+      font-size: 18px;
+      border: none;
+      width: calc(100% - 120px);
+    }
+    #Command > button {
+      height: 32px;
+      line-height: 30px;
+      font-size: 18px;
+      border: none;
+      width: 118px;
     }
   </style>
 </head>
 <body>
   <div id="output"></div>
-  <br>
-  <input type="text" id="input" placeholder="Enter command">
-  <button onclick="sendCommand()">Send</button>
-
+  <div id="Command">
+    <input type="text" id="input" placeholder="">
+    <button onclick="sendCommand()">Send</button>
+  </div>
   <script>
     const ws = new WebSocket('.');
 
@@ -43,6 +72,57 @@
       ws.send(input);
       document.getElementById('input').value = '';
     }
+
+    window.onbeforeunload = closingCode;
+    function closingCode(){
+      //ws.send('/q');
+      return null;
+    }
+
+
+    const spKeys = [37,38,39,40];
+    const input = document.getElementById('input');
+    document.addEventListener('keyup', (e) => {
+      e.preventDefault();
+      var event = window.event ? window.event : e;
+      console.log(event)
+      if(event.keyCode === 17) 
+      {
+        ws.send(e.code);
+        return;
+      }
+      if(event.keyCode === 33) //PageUp
+      {
+        ws.send(e.code);
+        return;
+      }
+      if(event.keyCode === 34) //PageDown
+      {
+        ws.send(e.code);
+        return;
+      }
+      if(spKeys.includes(event.keyCode))
+      {
+        ws.send(e.code);
+        return;
+      }
+      if(event.keyCode === 13) //enter
+      {
+        sendCommand();
+        return;
+      }
+      if(event.keyCode === 8) //backspace
+      {
+        input.value = input.value.substr(0,input.value.length-1);
+        return;
+      }
+      if ( (event.keyCode >= 48 && event.keyCode <= 57) 
+        || (event.keyCode >= 65 && event.keyCode <= 90) 
+         ) {
+        input.value += event.key;
+        return;
+      }
+    });
   </script>
 </body>
 </html>
