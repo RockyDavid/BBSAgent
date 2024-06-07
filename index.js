@@ -4,7 +4,6 @@ const WebSocket = require("ws");
 const uao = require("uao-js");
 const { Telnet } = require("telnet-client");
 const { ansiToPre } = require("ansi-to-pre");
-const ansi = require("ansi-escape-sequences");
 
 const app = express();
 const server = http.createServer(app);

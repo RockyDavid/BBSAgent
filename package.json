@@ -11,13 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^18.0.6",
-    "ansi-escape-sequences": "^6.2.2",
-    "ansi-to-html": "^0.7.2",
     "ansi-to-pre": "^1.0.4",
-    "blessed": "^0.1.81",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
-    "iconv-lite": "^0.6.3",
     "string": "^3.3.3",
     "telnet-client": "^2.2.0",
     "uao-js": "^1.0.1",
