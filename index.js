@@ -18,19 +18,10 @@ app.get("/", (req, res) => {
 });
 
 // WebSocket Server
-wss.on("connection", async (ws) => {
+wss.on("connection", (ws) => {
   console.log("Client connected");
 
   const telnetClient = new Telnet();
-
-  const params = {
-    host: "bs2.io",
-    port: 23,
-    negotiationMandatory: false,
-    timeout: 1500,
-  };
-  await telnetClient.connect(params);
-  await telnetClient.exec("\n"); // initial response
 
   let buffer = Buffer.alloc(0); // 缓冲区用于暂存未处理的数据
 
@@ -53,9 +44,25 @@ wss.on("connection", async (ws) => {
     telnetClient.end();
   });
 
-  ws.on("message", (message) => {
-    console.log("Received from client:", message.toString()); // Logging the received message
-    handleClientMessage(message, telnetClient);
+  ws.on("message", async (message) => {
+    try {
+      if (message.toString().indexOf("telnet://") > -1) {
+        const params = {
+          host: message.toString().replace("telnet://", ""),
+          port: 23,
+          negotiationMandatory: false,
+          timeout: 1500,
+        };
+        await telnetClient.connect(params);
+        await telnetClient.exec("\n"); // initial response
+        return;
+      } else {
+        console.log("Received from client:", message.toString()); // Logging the received message
+        handleClientMessage(message, telnetClient);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   });
 });
 

@@ -51,7 +51,7 @@
 <body>
   <div id="output"></div>
   <div id="Command">
-    <input type="text" id="input" placeholder="">
+    <input type="text" id="input" placeholder="" />
     <button onclick="sendCommand()">Send</button>
   </div>
   <script>
@@ -86,11 +86,6 @@
       e.preventDefault();
       var event = window.event ? window.event : e;
       console.log(event)
-      if(event.keyCode === 17) 
-      {
-        ws.send(e.code);
-        return;
-      }
       if(event.keyCode === 33) //PageUp
       {
         ws.send(e.code);
@@ -106,20 +101,13 @@
         ws.send(e.code);
         return;
       }
+    });
+    input.addEventListener('keyup', (e) => {
+      e.preventDefault();
+      var event = window.event ? window.event : e;
       if(event.keyCode === 13) //enter
       {
         sendCommand();
-        return;
-      }
-      if(event.keyCode === 8) //backspace
-      {
-        input.value = input.value.substr(0,input.value.length-1);
-        return;
-      }
-      if ( (event.keyCode >= 48 && event.keyCode <= 57) 
-        || (event.keyCode >= 65 && event.keyCode <= 90) 
-         ) {
-        input.value += event.key;
         return;
       }
     });
