@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTT Client</title>
+  <style>
+    @font-face {
+        font-family: 'uming';
+        src: url('/fonts/uming.ttc') format('truetype');
+        font-weight: normal;
+    }
+    #output {
+      font-family: 'uming';
+      color: #FFF;
+      background-color: #000; 
+      white-space: pre;
+      line-height: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div id="output"></div>
+  <br>
+  <input type="text" id="input" placeholder="Enter command">
+  <button onclick="sendCommand()">Send</button>
+
+  <script>
+    const ws = new WebSocket('.');
+
+    const output = document.getElementById('output');
+
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server');
+    };
+
+    ws.onmessage = (event) => {
+      output.innerHTML = event.data;
+    };
+
+    function sendCommand() {
+      const input = document.getElementById('input').value;
+      ws.send(input);
+      document.getElementById('input').value = '';
+    }
+  </script>
+</body>
+</html>
