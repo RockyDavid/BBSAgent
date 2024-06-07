@@ -80,22 +80,12 @@
     }
 
 
-    const spKeys = [37,38,39,40];
+    const spKeys = [33, 34, 37, 38, 39, 40];
     const input = document.getElementById('input');
     document.addEventListener('keyup', (e) => {
       e.preventDefault();
       var event = window.event ? window.event : e;
       console.log(event)
-      if(event.keyCode === 33) //PageUp
-      {
-        ws.send(e.code);
-        return;
-      }
-      if(event.keyCode === 34) //PageDown
-      {
-        ws.send(e.code);
-        return;
-      }
       if(spKeys.includes(event.keyCode))
       {
         ws.send(e.code);
